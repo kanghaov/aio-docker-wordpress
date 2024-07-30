@@ -2,10 +2,10 @@
 set -e
 
 # Start Nginx
-nginx
+nginx &
 
 # Start PHP-FPM
-php-fpm8.2 -F
+php-fpm -F
 
 # Keep the container running
 tail -f /dev/null

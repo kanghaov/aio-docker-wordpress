@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   wordpress:
-    image: wordpress:latest
+    build: .
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_NAME: wordpress

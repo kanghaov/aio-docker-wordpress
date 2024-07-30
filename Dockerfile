@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libzip-dev \
     unzip \
+    nano \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd mysqli zip opcache
 
@@ -19,15 +20,19 @@ RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
 #  Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+# Configure PHP
+RUN echo "upload_max_filesize = 100M" > /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "post_max_size = 100M" >> /usr/local/etc/php/conf.d/uploads.ini
+
 # Nginx Config
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # WordPress
 WORKDIR /var/www/html
 RUN curl -O https://wordpress.org/latest.tar.gz \
-    && tar -zxvf latest.tar.gz \
+    && tar -zxvf latest.tar.gz --strip-components=1 \
     && rm latest.tar.gz \
-    && chown -R www-data:www-data wordpress
+    && chown -R www-data:www-data /var/www/html
 
 # Starting Script
 COPY start.sh /usr/local/bin/start.sh
